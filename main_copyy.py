@@ -1,5 +1,7 @@
 import pygame
-from copy_class_personaje import *
+import menu_inicio
+import datos_del_jugador
+from class_personaje import *
 from class_enemigo import *
 from configuraciones import *
 from modo import *
@@ -7,6 +9,8 @@ from modo import *
 #PANTALLA
 ANCHO, ALTO = 1280, 720
 FPS = 20
+flag_sonido = True
+flag_inicio_juego = True
 
 pygame.init()
 SCREEN = pygame.display.set_mode((ANCHO, ALTO))
@@ -14,6 +18,7 @@ pygame.display.set_caption("Zombilandia")
 RELOJ = pygame.time.Clock()
 
 #FONDO 
+#fondo_menu = menu_inicio.menu_principal(SCREEN)
 fondo_nivel = pygame.image.load("imagenes/mapa.png")
 fondo_nivel = pygame.transform.scale(fondo_nivel, (ANCHO, ALTO))
 
@@ -36,26 +41,38 @@ diccionario_animaciones_enemigo_1["muere_i"] = enemigo_1_muere_i
 diccionario_animaciones_enemigo_1["muere_d"] = enemigo_1_muere_d
 
 enemigo_1 = Enemigo(diccionario_animaciones_enemigo_1, 1000, 600, (80, 70))
-lista_enemigos = [enemigo_1]
 
 #PLATAFORMAS
 piso = crear_plataforma(False, (ANCHO, 20), (0, 660))
-plataforma_1 = crear_plataforma(False, (345, 2), (21, 515))
-plataforma_2 = crear_plataforma(False, (272, 2), (299, 408))
-plataforma_3 = crear_plataforma(False, (345, 2), (633, 418))
-plataforma_4 = crear_plataforma(False, (272, 2), (945, 520))
 
-lista_plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4]
+piso_2 = crear_plataforma(False, (345, 2), (21, 515))
+
+lista_plataformas = [piso, piso_2]
 
 pj_principal.rectangulo.bottom = piso["rectangulo"].top
 
 enemigo_1.rectangulo_enemigo.bottom = piso["rectangulo"].top
 
+lista_enemigos = [enemigo_1]
+#MUSICA
+# sonido_fondo = pygame.mixer.Sound("juego zombie/sonidos/Alan Walker - The Spectre.mp3")
+# sonido_fondo.set_volume(0.1)
+# sonido_fondo.play()
+
+datos_jugador = datos_del_jugador.JugadorUsuario()
+
 running = True
 while running:
     RELOJ.tick(FPS)
     eventos = pygame.event.get()
-
+    
+    # boton_inicio = menu_inicio.boton_iniciar_juego(SCREEN)
+    # boton_score = menu_inicio.boton_score(SCREEN)
+    # boton_salir = menu_inicio.boton_salir(SCREEN)
+    
+        
+    # boton_sonido = menu_inicio.boton_sonido(SCREEN, flag_sonido)
+    
     for event in eventos:
         if event.type == pygame.QUIT:
             running = False
@@ -66,9 +83,23 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_TAB:
                 cambiar_modo()
+            
+        #     if boton_inicio.collidepoint(event.pos):
+        #         flag_inicio_juego = False
+                            
+        #     elif flag_inicio_juego == True:
+        #         if boton_salir.collidepoint(event.pos):
+        #             running = False
+                
+        #     if boton_sonido.collidepoint(event.pos):
+        #         if flag_sonido == True:
+        #             sonido_fondo.stop()
+        #             flag_sonido = False
+        #         else:
+        #             sonido_fondo.play()
+        #             flag_sonido = True
     
     teclas = pygame.key.get_pressed()
-    
     if teclas[pygame.K_RIGHT]:
         pj_principal.accion = "derecha"
         pj_principal.estado_donde_mira = True
@@ -98,7 +129,6 @@ while running:
     if obtener_modo():
         
         pygame.draw.rect(SCREEN, "red", pj_principal.rectangulo, 3)
-        pygame.draw.rect(SCREEN, "yellow", pj_principal.rectangulo_pies, 3)
             
         for enemigo in lista_enemigos:
             if not enemigo.esta_muerto:
@@ -106,6 +136,7 @@ while running:
         
         for plataformas in lista_plataformas:
             pygame.draw.rect(SCREEN, "blue", plataformas["rectangulo"], 3)
+        
         
     pygame.display.update()
 pygame.quit() # Fin
